@@ -12,6 +12,7 @@ class GetStockPrice(APIView):
         try:
             price = si.get_live_price(stock)
         except AssertionError:
-            return Response(data={"price": None}, status=status.HTTP_200_OK)
+            return Response(data={"Error": "No Stock Found!"},
+                            status=status.HTTP_400_BAD_REQUEST)
 
         return Response(data={"price": price}, status=status.HTTP_200_OK)
