@@ -43,3 +43,28 @@ class GetStockData(APIView):
             ])
 
         return Response(data=raw_data, status=status.HTTP_200_OK)
+
+
+class GetStockStat(APIView):
+
+    def get(self, request, format=None, *args, **kwargs):
+
+        stock = kwargs['stock']
+        try:
+            data = si.get_quote_table(ticker=stock)
+        except AssertionError:
+            return Response(data={"Error": "No Stock Found!"},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        range_year = data["52 Week Range"].split("-")
+        high = range_year[1].strip()
+        low = range_year[0].strip()
+        market_cap = data["Market Cap"]
+        volume = str(data["Volume"])
+
+        return Response(data={
+            "high": high,
+            "low": low,
+            "cap": market_cap,
+            "volume": volume
+        }, status=status.HTTP_200_OK)
